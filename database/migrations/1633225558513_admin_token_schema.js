@@ -3,11 +3,11 @@
 /** @type {import('@adonisjs/lucid/src/Schema')} */
 const Schema = use('Schema')
 
-class TokensSchema extends Schema {
+class AdminTokenSchema extends Schema {
   up () {
-    this.create('tokens', (table) => {
+    this.create('admin_tokens', (table) => {
       table.increments('id')
-      table.integer('user_id').unsigned().references('id').inTable('users')
+      table.integer('admin_id').unsigned().references('id').inTable('admins').onDelete('CASCADE')
       table.string('token', 255).notNullable().unique().index()
       table.string('type', 80).notNullable()
       table.boolean('is_revoked').defaultTo(false)
@@ -17,8 +17,8 @@ class TokensSchema extends Schema {
   }
 
   down () {
-    this.drop('tokens')
+    this.drop('admin_tokens')
   }
 }
 
-module.exports = TokensSchema
+module.exports = AdminTokenSchema
