@@ -2,7 +2,7 @@
 
 const User = use('App/Models/User')
 
-class UsersController {
+class UserController {
 
     async index () {
 
@@ -16,7 +16,7 @@ class UsersController {
 
         const {id} = request.params
     
-        const user = await User.find(id);
+        const user = await User.findOrFail(id);
         
         if(!user)
         throw 404
@@ -29,7 +29,7 @@ class UsersController {
 
         const {id} = request.params;
 
-        const user = await User.find(id);
+        const user = await User.findOrFail(id);
 
         if(!user)
         throw 404
@@ -66,4 +66,4 @@ class UsersController {
 
 }
 
-module.exports = UsersController
+module.exports = UserController

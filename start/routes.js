@@ -19,12 +19,19 @@ const Route = use('Route');
 Route.post('/register', 'AuthController.register');
 Route.post('/login', 'AuthController.authenticate');
 
-Route.group(()=>{
-    Route.get('/users','UsersController.index');
-    Route.get('/users/:id','UsersController.show');
-    Route.put('/users/:id','UsersController.update');
-    Route.delete('/users/:id','UsersController.destroy');
+Route.post('/register/admin', 'AdminController.register');
+Route.post('/login/admin', 'AdminController.authenticate');
 
+Route.group(()=>{
+    Route.get('/users','UserController.index');
+    Route.get('/users/:id','UserController.show');
+    Route.put('/users/:id','UserController.update');
+    Route.delete('/users/:id','UserController.destroy');
+
+}).middleware('auth:adminAuth, auth:jwt');
+
+Route.group(()=> {
+    
     // Route.get('/coupons','CouponsController.index');
     // Route.get('/coupons/:id','CouponsController.show');
     // Route.put('/coupons/:id','CouponsController.update');
@@ -34,4 +41,4 @@ Route.group(()=>{
     // Route.get('/levels/:id','LevelsController.show');
     // Route.put('/levels/:id','LevelsController.update');
     // Route.delete('/levels/:id','LevelsController.destroy');
-}).middleware('auth');
+}).middleware('auth:adminAuth');
