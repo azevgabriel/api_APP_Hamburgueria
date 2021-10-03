@@ -16,11 +16,11 @@
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
 const Route = use('Route');
 
-Route.post('/register', 'AuthController.register');
-Route.post('/login', 'AuthController.authenticate');
+Route.post('/register', 'UserController.register');
+Route.post('/login', 'UserController.authenticate');
 
-Route.post('/register/admin', 'AdminController.register');
 Route.post('/login/admin', 'AdminController.authenticate');
+//Route.post('/register/admin', 'AdminController.register');
 
 Route.group(()=>{
     Route.get('/users','UserController.index');
@@ -32,10 +32,11 @@ Route.group(()=>{
 
 Route.group(()=> {
     
-    // Route.get('/coupons','CouponsController.index');
-    // Route.get('/coupons/:id','CouponsController.show');
-    // Route.put('/coupons/:id','CouponsController.update');
-    // Route.delete('/coupons/:id','CouponsController.destroy');
+    Route.get('/coupons','CouponController.index');
+    Route.get('/coupons/:id','CouponController.show');
+    Route.post('/coupons','CouponController.store');
+    Route.put('/coupons/:id','CouponController.update');
+    Route.delete('/coupons/:id','CouponController.destroy');
 
     // Route.get('/levels','LevelsController.index');
     // Route.get('/levels/:id','LevelsController.show');

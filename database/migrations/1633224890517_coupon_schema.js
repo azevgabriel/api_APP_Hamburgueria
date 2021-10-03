@@ -15,11 +15,11 @@ class CouponSchema extends Schema {
       table
         .integer('level_id')
         .unsigned()
-        .notNullable()
         .references('id')
         .inTable('levels')
         .onUpdate('CASCADE')
         .onDelete('CASCADE')
+        .defaultTo(null)
       table.integer('burgers_added').notNullable().defaultTo(1)
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })

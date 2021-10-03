@@ -1,21 +1,20 @@
 'use strict'
 
-const User = use('App/Models/Admin')
-const Hash = use('Hash')
+const Admin = use('App/Models/Admin')
 
 class AdminController {
 
-    async register({ request }){
-        const data = request.only([
-            'name', 
-            'cpf', 
-            'password',
-        ]);
+    // async register({ request }){
+    //     const data = request.only([
+    //         'name', 
+    //         'cpf', 
+    //         'password',
+    //     ]);
     
-        const user = await User.create(data)
+    //     const user = await Admin.create(data)
     
-        return user;
-    };
+    //     return user;
+    // };
 
     async authenticate({ request, auth }){
         const { cpf, password } = request.all();
@@ -24,7 +23,7 @@ class AdminController {
     
         const responseData = {
             token,
-            user: await User.findBy('cpf', cpf)
+            user: await Admin.findBy('cpf', cpf)
         };
 
         return responseData;
