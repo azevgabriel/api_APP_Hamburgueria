@@ -10,6 +10,7 @@ class CouponSchema extends Schema {
       table.integer('permitted_uses').notNullable().defaultTo(1)
       table.string('image', 100).notNullable().defaultTo('defaultCoupon.png')
       table.string('title', 50).notNullable()
+      table.string('expiration_date', 20).notNullable()
       table.text('description')
       table.boolean('fidelity').notNullable().defaultTo(false)
       table

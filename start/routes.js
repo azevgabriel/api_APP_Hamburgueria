@@ -20,7 +20,7 @@ Route.post('/register', 'UserController.register');
 Route.post('/login', 'UserController.authenticate');
 
 Route.post('/login/admin', 'AdminController.authenticate');
-//Route.post('/register/admin', 'AdminController.register');
+Route.post('/register/admin', 'AdminController.register');
 
 Route.group(()=>{
     Route.get('/users','UserController.index');
@@ -38,8 +38,9 @@ Route.group(()=> {
     Route.put('/coupons/:id','CouponController.update');
     Route.delete('/coupons/:id','CouponController.destroy');
 
-    // Route.get('/levels','LevelsController.index');
-    // Route.get('/levels/:id','LevelsController.show');
-    // Route.put('/levels/:id','LevelsController.update');
-    // Route.delete('/levels/:id','LevelsController.destroy');
+    Route.get('/levels','LevelController.index');
+    Route.get('/levels/:id','LevelController.show');
+    Route.post('/levels','LevelController.store');
+    Route.put('/levels/:id','LevelController.update');
+    Route.delete('/levels/:id','LevelController.destroy');
 }).middleware('auth:adminAuth');
