@@ -34,6 +34,7 @@ class CouponController {
             'fidelity',
             'level_id',
             'burgers_added',
+            'expiration_date'
         ]);
 
         const coupon = await Coupon.create(data)
