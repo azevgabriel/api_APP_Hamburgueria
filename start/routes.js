@@ -28,6 +28,15 @@ Route.group(()=>{
     Route.put('/users/:id','UserController.update');
     Route.delete('/users/:id','UserController.destroy');
 
+    Route.get('/userCoupon','UserCouponController.index');
+    Route.get('/userCoupon/:id','UserCouponController.showByUser');
+
+    Route.get('/coupons','CouponController.index');
+    Route.get('/coupons/:id','CouponController.show');
+
+    Route.get('/levels','LevelController.index');
+    Route.get('/levels/:id','LevelController.show');
+
 }).middleware('auth:adminAuth, auth:jwt');
 
 Route.group(()=> {
