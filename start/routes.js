@@ -16,15 +16,11 @@
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
 const Route = use('Route');
 
-Route.get("/", () => {
-    return { greeting: "Welcome to the Adonis API tutorial" };
-});
-
 Route.post('/register', 'UserController.register');
 Route.post('/login', 'UserController.authenticate');
 
 Route.post('/login/admin', 'AdminController.authenticate');
-//Route.post('/register/admin', 'AdminController.register');
+Route.post('/register/admin', 'AdminController.register');
 
 Route.group(()=>{
     Route.get('/users/:id','UserController.show');
