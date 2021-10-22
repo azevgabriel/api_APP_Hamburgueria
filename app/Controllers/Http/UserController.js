@@ -1,5 +1,8 @@
 'use strict'
 
+/** @type {import('@adonisjs/framework/src/Hash')} */
+const Hash = use('Hash')
+
 const User = use('App/Models/User')
 
 class UserController {
@@ -15,19 +18,29 @@ class UserController {
             'burgers'
         ]);
     
-        const user = await User.create(data)
-    
+        var userData = await User.create(data)
+
+        const user = userData.toJSON();
+        delete user.password;
+        delete user.created_at;
+        delete user.updated_at;
         return user;
     };
 
     async authenticate({ request, auth }){
         const { cpf, password } = request.all();
         
-        const token = await auth.attempt(cpf, password);
-    
+        let token = await auth.attempt(cpf, password);
+        let userData = await User.findBy('cpf', cpf)
+
+        const user = userData.toJSON();
+        delete user.password;
+        delete user.created_at;
+        delete user.updated_at;
+
         const responseData = {
             token,
-            user: await User.findBy('cpf', cpf)
+            user
         };
 
         return responseData;
@@ -37,7 +50,15 @@ class UserController {
 
         const users = await User.all();
 
-        return users;
+        //remove o campo password do array de users 
+        const usersClean = users.toJSON();
+        for (let i = 0; i < usersClean.length; i++) {
+            delete usersClean[i].password;
+            delete usersClean[i].created_at;
+            delete usersClean[i].updated_at;
+        }
+
+        return usersClean;
 
     };
 
@@ -45,11 +66,15 @@ class UserController {
 
         const {id} = request.params
     
-        const user = await User.findOrFail(id);
+        const userData = await User.findOrFail(id);
         
-        if(!user)
+        if(!userData)
         throw 404
 
+        const user = userData.toJSON();
+        delete user.password;
+        delete user.created_at;
+        delete user.updated_at;
         return user;
 
     };
@@ -58,9 +83,9 @@ class UserController {
 
         const {id} = request.params;
 
-        const user = await User.findOrFail(id);
+        const userData = await User.findOrFail(id);
 
-        if(!user)
+        if(!userData)
         throw 404
 
         const data = request.only([
@@ -70,12 +95,45 @@ class UserController {
             'image',
         ]);
 
-        user.merge(data);
+        userData.merge(data);
 
-        await user.save();
+        await userData.save();
 
+        const user = userData.toJSON();
+        delete user.password;
+        delete user.created_at;
+        delete user.updated_at;
         return user;
 
+    };
+
+    async updatePassword ({ request }) {
+
+        const {id} = request.params;
+
+        const user = await User.findOrFail(id);
+
+        if(!user)
+        throw 404
+
+        const data = request.only([
+            'password',
+            'oldPassword'
+        ]);
+
+        if (await Hash.verify(data.oldPassword, user.password)) {
+
+            let mergeData = {
+                'password': data.password
+            }
+
+            user.merge(mergeData);
+            await user.save();
+            return {message: 'Senha alterada com sucesso'};
+        } else {
+            return {message: 'Senha antiga incorreta'};
+        }
+        
     };
 
     async destroy ({ request }) {

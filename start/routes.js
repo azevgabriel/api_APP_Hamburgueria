@@ -23,9 +23,9 @@ Route.post('/login/admin', 'AdminController.authenticate');
 Route.post('/register/admin', 'AdminController.register');
 
 Route.group(()=>{
-    Route.get('/users','UserController.index');
     Route.get('/users/:id','UserController.show');
     Route.put('/users/:id','UserController.update');
+    Route.put('/users/:id/password','UserController.updatePassword');
     Route.delete('/users/:id','UserController.destroy');
 
     Route.get('/userCoupon','UserCouponController.index');
@@ -40,7 +40,9 @@ Route.group(()=>{
 }).middleware('auth:adminAuth, auth:jwt');
 
 Route.group(()=> {
-    
+
+    Route.get('/users','UserController.index');
+
     Route.get('/coupons','CouponController.index');
     Route.get('/coupons/:id','CouponController.show');
     Route.post('/coupons','CouponController.store');

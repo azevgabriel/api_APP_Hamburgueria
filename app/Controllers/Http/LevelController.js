@@ -16,7 +16,7 @@ class LevelController {
 
         const {id} = request.params
     
-        const level = await Level.findOrFail(id);
+        const level = Level.query().where('level', '=', id).fetch()
         
         if(!level)
         throw 404
