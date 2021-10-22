@@ -16,9 +16,7 @@
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
 const Route = use('Route');
 
-Route.get("/", () => {
-    return { greeting: "Bem vindo à API Hamburgueria" };
-});
+Route.get("/", () => {return { greeting: "Bem vindo à API Hamburgueria" };});
 
 Route.post('/register', 'UserController.register');
 Route.post('/login', 'UserController.authenticate');
