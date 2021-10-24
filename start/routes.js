@@ -22,7 +22,7 @@ Route.post('/register', 'UserController.register');
 Route.post('/login', 'UserController.authenticate');
 
 Route.post('/login/admin', 'AdminController.authenticate');
-Route.post('/register/admin', 'AdminController.register');
+//Route.post('/register/admin', 'AdminController.register');
 
 Route.group(()=>{
     Route.get('/users/:id','UserController.show');
