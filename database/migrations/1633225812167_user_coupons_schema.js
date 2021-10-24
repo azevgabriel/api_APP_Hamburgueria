@@ -28,6 +28,11 @@ class UserCouponSchema extends Schema {
         .unsigned()
         .notNullable()
         .defaultTo(1)
+      table
+        .integer('burgers_added')
+        .unsigned()
+        .notNullable()
+        .defaultTo(1)
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })
     })

@@ -32,6 +32,7 @@ Route.group(()=>{
 
     Route.get('/userCoupon','UserCouponController.index');
     Route.get('/userCoupon/:id','UserCouponController.showByUser');
+    Route.put('/userCoupon/:id/coupon/:idCoupon','UserCouponController.update');
 
     Route.get('/coupons','CouponController.index');
     Route.get('/coupons/:id','CouponController.show');

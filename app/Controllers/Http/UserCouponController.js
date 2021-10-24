@@ -1,12 +1,15 @@
 'use strict'
 
-const UserCoupon = use('App/Models/UserCoupon')
+const UserCoupon = use('App/Models/UserCoupon');
+const User = use('App/Models/User');
 
 class UserCouponController {
 
   async index () {
 
-    const userCoupon = await UserCoupon.all();
+    const userCoupon = await UserCoupon.query()
+      .where('remaining_uses', '>', 0)
+      .fetch()
 
     return userCoupon;
 
@@ -16,7 +19,10 @@ class UserCouponController {
 
     const {id} = request.params;
 
-    const userCoupon = UserCoupon.query().where('user_id', '=', id).fetch()
+    const userCoupon = UserCoupon.query()
+      .where('user_id', '=', id)
+      .where('remaining_uses', '>', 0)
+      .fetch()
 
     if(!userCoupon)
     throw 404
@@ -39,22 +45,39 @@ class UserCouponController {
 
   async update ({ request }) {
 
-      const {id} = request.params;
+    const {id, idCoupon} = request.params;
 
-      const userCoupon = await UserCoupon.findOrFail(id);
+    const userCoupon = await UserCoupon.query()
+      .where('user_id', '=', id)
+      .where('coupon_id', '=', idCoupon)
+      .fetch()
 
-      if(!userCoupon)
-      throw 404
+    const user = await User.findOrFail(id);
+    
+    if(!userCoupon || !user)
+    throw 404
 
-      const data = request.only([
-        'remaining_uses',
-      ]);
+    // Subtrai 1 do uso restante
+    let userCouponJSON = userCoupon.toJSON()
+    if(userCouponJSON[0].remaining_uses > 0){
+      userCouponJSON[0].remaining_uses = userCouponJSON[0].remaining_uses - 1
+    } else {
+      return {"message": "Não há mais usos no Cupom"}
+    }
+    
+    // Adiciona número de burgers ao usuário
+    let userJSON = user.toJSON()
+    userJSON.burgers = userJSON.burgers + userCouponJSON[0].burgers_added;
 
-      userCoupon.merge(data);
+    const userCouponId = await UserCoupon.findOrFail(userCouponJSON[0].id);
 
-      await userCoupon.save();
+    userCouponId.merge(userCouponJSON[0]);
+    user.merge(userJSON)
 
-      return userCoupon;
+    await userCouponId.save();
+    await user.save();
+
+    return {userCouponId, user};
 
   };
 
