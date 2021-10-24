@@ -45,6 +45,7 @@ Route.group(()=>{
 Route.group(()=> {
 
     Route.get('/users','UserController.index');
+    Route.get('/userCoupon','UserCouponController.index');
 
     Route.get('/coupons','CouponController.index');
     Route.get('/coupons/:id','CouponController.show');
