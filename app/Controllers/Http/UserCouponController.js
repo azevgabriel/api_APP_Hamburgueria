@@ -3,6 +3,7 @@
 const UserCoupon = use('App/Models/UserCoupon');
 const Coupon = use('App/Models/Coupon');
 const User = use('App/Models/User');
+const Level = use('App/Models/Level')
 
 class UserCouponController {
 
@@ -85,6 +86,18 @@ class UserCouponController {
     let userJSON = user.toJSON()
     userJSON.burgers = userJSON.burgers + userCouponJSON[0].burgers_added;
 
+    let nextLevel = userJSON.level + 1; 
+
+    let level = await Level.findBy('level', nextLevel);
+
+    if(level) {
+      let levelJSON = level.toJSON();
+
+      if (levelJSON.burgers_needed <= userJSON.burgers) {
+        userJSON.level = userJSON.level + 1;
+      }
+    }
+
     const userCouponId = await UserCoupon.findOrFail(userCouponJSON[0].id);
 
     userCouponId.merge(userCouponJSON[0]);
@@ -93,7 +106,11 @@ class UserCouponController {
     await userCouponId.save();
     await user.save();
 
-    return {userCouponId, user};
+    delete userJSON.password;
+    delete userJSON.created_at;
+    delete userJSON.updated_at;
+
+    return {userCouponId, userJSON};
 
   };
   
