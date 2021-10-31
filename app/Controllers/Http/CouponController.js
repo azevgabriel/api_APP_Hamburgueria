@@ -78,6 +78,7 @@ class CouponController {
             'fidelity',
             'fidelity_level',
             'burgers_added',
+            'expiration_date'
         ]);
 
         try {
