@@ -22,7 +22,7 @@ Route.post('/register', 'UserController.register');
 Route.post('/login', 'UserController.authenticate');
 
 Route.post('/login/admin', 'AdminController.authenticate');
-//Route.post('/register/admin', 'AdminController.register');
+Route.post('/register/admin', 'AdminController.register');
 
 Route.group(()=>{
     Route.get('/users/:id','UserController.show');
@@ -33,6 +33,7 @@ Route.group(()=>{
     Route.get('/userCoupon','UserCouponController.index');
     Route.get('/userCoupon/:id','UserCouponController.showByUser');
     Route.put('/userCoupon/:id/coupon/:idCoupon','UserCouponController.update');
+    Route.post('/userCoupon','UserCouponController.store');
 
     Route.get('/coupons','CouponController.index');
     Route.get('/coupons/:id','CouponController.show');

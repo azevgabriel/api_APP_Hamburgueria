@@ -13,7 +13,7 @@ class UserSchema extends Schema {
       table.string('phone', 30).notNullable().unique()
       table.string('password', 60).notNullable()
       table.string('image', 100).notNullable().defaultTo('defaultUser.png')
-      table.integer('level', 100).notNullable().defaultTo(1)
+      table.integer('level', 100).notNullable().defaultTo(0)
       table.integer('burgers', 100000).notNullable().defaultTo(0)
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })

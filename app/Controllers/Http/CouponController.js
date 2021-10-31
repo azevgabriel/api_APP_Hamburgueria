@@ -34,7 +34,7 @@ class CouponController {
             'description',
             'title',
             'fidelity',
-            'level_id',
+            'fidelity_level',
             'burgers_added',
             'expiration_date'
         ]);
@@ -46,7 +46,7 @@ class CouponController {
         let usersJSON = user.toJSON();
         if (usersJSON.length > 0) {
             usersJSON.forEach(async user => {
-                if (dataCoupon.fidelity === false) {
+                if (couponJSON.fidelity !== true) {
                 const dataCoupon = {
                         'user_id': user.id, 
                         'coupon_id': couponJSON.id, 
@@ -77,7 +77,7 @@ class CouponController {
             'title',
             'description',
             'fidelity',
-            'level_id',
+            'fidelity_level',
             'burgers_added',
         ]);
 
