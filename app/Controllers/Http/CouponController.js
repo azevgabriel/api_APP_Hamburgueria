@@ -44,17 +44,20 @@ class CouponController {
 
         const user = await User.query().fetch();
         let usersJSON = user.toJSON();
-        
-        usersJSON.forEach(async user => {
-            const dataCoupon = {
-                'user_id': user.id, 
-                'coupon_id': couponJSON.id, 
-                'remaining_uses': couponJSON.permitted_uses,
-                'burgers_added': couponJSON.burgers_added
-            }
+        if (usersJSON.length > 0) {
+            usersJSON.forEach(async user => {
+                if (dataCoupon.fidelity === false) {
+                const dataCoupon = {
+                        'user_id': user.id, 
+                        'coupon_id': couponJSON.id, 
+                        'remaining_uses': couponJSON.permitted_uses,
+                        'burgers_added': couponJSON.burgers_added
+                    }
 
-            await UserCoupon.create(dataCoupon)
-        })
+                    await UserCoupon.create(dataCoupon);
+                };
+            });
+        };
 
         return coupon;
     };

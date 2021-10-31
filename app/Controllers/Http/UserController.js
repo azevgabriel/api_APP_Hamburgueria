@@ -4,6 +4,8 @@
 const Hash = use('Hash')
 
 const User = use('App/Models/User')
+const Coupon = use('App/Models/Coupon');
+const UserCoupon = use('App/Models/UserCoupon');
 
 class UserController {
 
@@ -21,9 +23,28 @@ class UserController {
         var userData = await User.create(data)
 
         const user = userData.toJSON();
+    
+        const coupons = await Coupon.query().where('fidelity', "=", "false").fetch();
+        let couponsJSON = coupons.toJSON();
+        
+        if(couponsJSON.length > 0){
+            couponsJSON.forEach(async coupon => {
+                const dataCoupon = {
+                    'user_id': user.id, 
+                    'coupon_id': coupon.id, 
+                    'remaining_uses': coupon.permitted_uses,
+                    'burgers_added': coupon.burgers_added
+                }
+
+                await UserCoupon.create(dataCoupon);
+
+            })
+        };
+
         delete user.password;
         delete user.created_at;
         delete user.updated_at;
+
         return user;
     };
 

@@ -11,7 +11,7 @@ class AdminController {
             'password',
         ]);
     
-        const user = await Admin.create(data)
+        const user = await Admin.create(data);
     
         return user;
     };
