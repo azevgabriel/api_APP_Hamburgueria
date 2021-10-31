@@ -14,20 +14,23 @@ class CouponController {
 
     };
 
-    async show ({ request }) {
+    async show ({ request, response }) {
 
-        const {id} = request.params
-    
-        const coupon = await Coupon.findOrFail(id);
+        try {
+            const {id} = request.params
         
-        if(!coupon)
-        throw 404
-
-        return coupon;
+            const coupon = await Coupon.findOrFail(id);
+        
+            return coupon;
+        } catch (error) {
+            return response.status(404).send({
+                message: "Cupom não existente"
+            })
+        }
 
     };
 
-    async store({ request }){
+    async store({ request, response }){
         const data = request.only([
             'permitted_uses', 
             'image', 
@@ -39,37 +42,38 @@ class CouponController {
             'expiration_date'
         ]);
 
-        const coupon = await Coupon.create(data)
-        let couponJSON = coupon.toJSON();
+        try {
+            const coupon = await Coupon.create(data)
+            let couponJSON = coupon.toJSON();
 
-        const user = await User.query().fetch();
-        let usersJSON = user.toJSON();
-        if (usersJSON.length > 0) {
-            usersJSON.forEach(async user => {
-                if (couponJSON.fidelity !== true) {
-                const dataCoupon = {
-                        'user_id': user.id, 
-                        'coupon_id': couponJSON.id, 
-                        'remaining_uses': couponJSON.permitted_uses,
-                        'burgers_added': couponJSON.burgers_added
-                    }
+            const user = await User.query().fetch();
+            let usersJSON = user.toJSON();
+            if (usersJSON.length > 0) {
+                usersJSON.forEach(async user => {
+                    if (couponJSON.fidelity !== true) {
+                    const dataCoupon = {
+                            'user_id': user.id, 
+                            'coupon_id': couponJSON.id, 
+                            'remaining_uses': couponJSON.permitted_uses,
+                            'burgers_added': couponJSON.burgers_added
+                        }
 
-                    await UserCoupon.create(dataCoupon);
-                };
-            });
-        };
+                        await UserCoupon.create(dataCoupon);
+                    };
+                });
+            };
 
-        return coupon;
+            return coupon;
+        } catch (error) {
+            return response.status(400).send({
+                message: "Erro ao criar o cupom"
+            })
+        }
     };
 
-    async update ({ request }) {
+    async update ({ request, response }) {
 
         const {id} = request.params;
-
-        const coupon = await Coupon.findOrFail(id);
-
-        if(!coupon)
-        throw 404
 
         const data = request.only([
             'permitted_uses', 
@@ -81,26 +85,37 @@ class CouponController {
             'burgers_added',
         ]);
 
-        coupon.merge(data);
-
-        await coupon.save();
-
-        return coupon;
+        try {
+            var coupon = await Coupon.findOrFail(id);            
+        } catch (error) {
+            return response.status(404).send({
+                message: "Cupom não existente"
+            })
+        }
+        
+        try {
+            coupon.merge(data);
+            await coupon.save();
+            return coupon;
+        } catch (error) {
+            return response.status(400).send({
+                message: "Erro ao atualizar o cupom"
+            })
+        }
 
     };
 
-    async destroy ({ request }) {
-
+    async destroy ({ request, response }) {
         const {id} = request.params;
-
-        const coupon = await Coupon.find(id);
-
-        if(!coupon)
-        throw 404
-
-        await coupon.delete();
-
-        return {message: 'Cupom deletado com sucesso'};
+        try {
+            const coupon = await Coupon.find(id);
+            await coupon.delete();
+            return response.status(204).send();
+        } catch (error) {
+            return response.status(404).send({
+                message: "Cupom não existente"
+            })
+        }
 
     }
 

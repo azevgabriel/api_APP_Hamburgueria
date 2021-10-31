@@ -16,17 +16,30 @@ class AdminController {
         return user;
     };
 
-    async authenticate({ request, auth }){
+    async authenticate({ request, auth, response }){
         const { cpf, password } = request.all();
         
-        const token = await auth.authenticator('adminAuth').attempt(cpf, password);
-    
-        const responseData = {
-            token,
-            user: await Admin.findBy('cpf', cpf)
-        };
+        const userData = await Admin.findBy('cpf', cpf)
+        const user = userData.toJSON();
+        delete user.password;
+        delete user.created_at;
+        delete user.updated_at;
 
-        return responseData;
+        try {
+            const token = await auth.authenticator('adminAuth').attempt(cpf, password);
+            const responseData = {
+                token,
+                user
+            };
+            return responseData;
+        } catch (error) {
+            return response.status(404).send({
+                error: {
+                    message: 'Invalid credentials'
+                }
+            });
+        }
+
     };
 }
 
