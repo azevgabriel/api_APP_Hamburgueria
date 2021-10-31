@@ -47,13 +47,6 @@ class UserCouponController {
 
     const {id} = request.params;
 
-    const today = new Date();
-    const day = today.getDate();
-    const month = today.getMonth() + 1;
-    const year = today.getFullYear();
-    
-    return `${day}/${month}/${year}`;
-
     const userCoupon = UserCoupon.query()
       .where('user_id', '=', id)
       .where('remaining_uses', '>', 0)

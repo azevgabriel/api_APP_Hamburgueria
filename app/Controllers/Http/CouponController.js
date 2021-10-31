@@ -116,7 +116,40 @@ class CouponController {
                 message: "Cupom não existente"
             })
         }
+    }
 
+    async destroyExpirated ({ response }) {
+
+        const today = new Date();
+        const day = today.getDate();
+        const month = today.getMonth() + 1;
+        const year = today.getFullYear();
+        
+        const coupons = await Coupon.all();
+        const couponsJSON = coupons.toJSON();
+
+        couponsJSON.forEach(async coupon => {
+            let deleteCoupon;
+            let date = coupon.expiration_date.split('/');
+
+            if (date[2] < year) {
+                deleteCoupon = await Coupon.find(coupon.id);
+                await deleteCoupon.delete();
+            }
+            else if (date[2] == year && date[1] < month) {
+                deleteCoupon = await Coupon.find(coupon.id);
+                await deleteCoupon.delete();
+            }
+            else if (date[2] == year && date[1] == month && date[0] < day) {
+                deleteCoupon = await Coupon.find(coupon.id);
+                await deleteCoupon.delete();
+            }
+            
+
+
+        });
+
+        return response.status(204).send();
     }
 
 }
