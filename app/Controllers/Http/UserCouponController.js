@@ -9,15 +9,14 @@ class UserCouponController {
 
   async index () {
 
-    const userCoupon = await UserCoupon.query()
-      .where('remaining_uses', '>', 0)
-      .fetch()
+    const userCoupon = await UserCoupon
+      .query().where('remaining_uses', '>', 0).fetch()
 
     return userCoupon;
 
   };
 
-  async store ({ request }) {
+  async store ({ request, response }) {
     const {user_id, coupon_id} = request.body;
 
     const coupon = await Coupon.findOrFail(coupon_id);
@@ -36,10 +35,14 @@ class UserCouponController {
 
         return userCoupon;
       } else {
-        return {"message": "O usuário não tem nível sufucuente para esse cupom."}
+        return response.status(400).send({
+          message: 'O usuário não atingiu o nível necessário para usar o cupom',
+        });
       }
     } else {
-      return {"message": "O cupom não é de fidelidade."}
+      return response.status(400).send({
+        message: 'O cupom não é de fidelidade.',
+      });
     }
   };
 
@@ -47,39 +50,42 @@ class UserCouponController {
 
     const {id} = request.params;
 
-    const userCoupon = UserCoupon.query()
+    const userCoupon = UserCoupon
+      .query()
       .where('user_id', '=', id)
       .where('remaining_uses', '>', 0)
       .fetch()
-
-    if(!userCoupon)
-    throw 404
 
     return userCoupon;  
 
   };
 
-  async update ({ request }) {
+  async update ({ request, response }) {
 
     const {id, idCoupon} = request.params;
 
-    const userCoupon = await UserCoupon.query()
+    const userCoupon = await UserCoupon
+      .query()
       .where('user_id', '=', id)
       .where('coupon_id', '=', idCoupon)
       .fetch()
 
     const user = await User.findOrFail(id);
     
-    if(!userCoupon || !user)
-    throw 404
+    if(!user){
+      return response.status(400).send({
+        message: 'Usuário não encontrado',
+      });
+    }
 
     // Subtrai 1 do uso restante
     let userCouponJSON = userCoupon.toJSON()
     if(userCouponJSON[0].remaining_uses > 0){
       userCouponJSON[0].remaining_uses = userCouponJSON[0].remaining_uses - 1
     } else {
-      return {"message": "Não há mais usos no Cupom"}
-
+      return response.status(400).send({
+        message: 'O usuário não possui mais usos do cupom',
+      });
     }
     
     // Adiciona número de burgers ao usuário

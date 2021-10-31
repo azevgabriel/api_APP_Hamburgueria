@@ -7,20 +7,15 @@ const UserCoupon = use('App/Models/UserCoupon');
 class CouponController {
 
     async index () {
-
         const coupons = await Coupon.all();
-
         return coupons;
-
     };
 
     async show ({ request, response }) {
 
         try {
             const {id} = request.params
-        
             const coupon = await Coupon.findOrFail(id);
-        
             return coupon;
         } catch (error) {
             return response.status(404).send({
@@ -128,25 +123,31 @@ class CouponController {
         const coupons = await Coupon.all();
         const couponsJSON = coupons.toJSON();
 
+        if (!coupons) {
+            return response.status(404).send({
+                message: "Nenhum cupom encontrado"
+            })
+        }
+
+
         couponsJSON.forEach(async coupon => {
-            let deleteCoupon;
-            let date = coupon.expiration_date.split('/');
+            if (coupon.fidelity === false) {
+                let deleteCoupon;
+                let date = coupon.expiration_date.split('/');
 
-            if (date[2] < year) {
-                deleteCoupon = await Coupon.find(coupon.id);
-                await deleteCoupon.delete();
+                if (date[2] < year) {
+                    deleteCoupon = await Coupon.find(coupon.id);
+                    await deleteCoupon.delete();
+                }
+                else if (date[2] == year && date[1] < month) {
+                    deleteCoupon = await Coupon.find(coupon.id);
+                    await deleteCoupon.delete();
+                }
+                else if (date[2] == year && date[1] == month && date[0] < day) {
+                    deleteCoupon = await Coupon.find(coupon.id);
+                    await deleteCoupon.delete();
+                }
             }
-            else if (date[2] == year && date[1] < month) {
-                deleteCoupon = await Coupon.find(coupon.id);
-                await deleteCoupon.delete();
-            }
-            else if (date[2] == year && date[1] == month && date[0] < day) {
-                deleteCoupon = await Coupon.find(coupon.id);
-                await deleteCoupon.delete();
-            }
-            
-
-
         });
 
         return response.status(204).send();

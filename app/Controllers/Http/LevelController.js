@@ -5,71 +5,73 @@ const Level = use('App/Models/Level')
 class LevelController {
 
     async index () {
-
         const Levels = await Level.all();
-
         return Levels;
-
     };
 
     async show ({ request }) {
+        const {id} = request.params;
+        const level = Level.findBy("level", id);
+        return level;
+    };
 
-        const {id} = request.params
-    
-        const level = Level.query().where('level', '=', id).fetch()
+    async store({ request, response }){
+
+        try {
+            const data = request.only([
+                'level', 
+                'burgers_needed', 
+            ]);
+            const level = await Level.create(data)
+            return level;
+        } catch (error) {
+            return response.status(400).send({
+                message: 'Erro ao criar level.'
+            });
+        }
         
-        if(!level)
-        throw 404
-
-        return level;
-
     };
 
-    async store({ request }){
-
-        const data = request.only([
-            'level', 
-            'burgers_needed', 
-        ]);
-
-        const level = await Level.create(data)
-    
-        return level;
-    };
-
-    async update ({ request }) {
+    async update ({ request, response }) {
 
         const {id} = request.params;
-
-        const level = await Level.findOrFail(id);
-
-        if(!level)
-        throw 404
-
+        
         const data = request.only([
             'burgers_needed', 
         ]);
 
-        level.merge(data);
-
-        await level.save();
-
-        return level;
+        try {
+            const level = await Level.findOrFail(id);
+            if(!level){
+                return response.status(404).send({
+                    message: 'Nenhum level encontrado.'
+                });
+            }
+            
+            level.merge(data);
+            await level.save();
+            return level;
+        } catch (error) {
+            return response.status(400).send({
+                message: 'Erro ao editar level.'
+            });
+        }
 
     };
 
-    async destroy ({ request }) {
+    async destroy ({ request, response }) {
 
         const {id} = request.params;
 
-        const level = await Level.find(id);
-
-        if(!level)
-        throw 404
-
-        await level.delete();
-
-        return {message: 'Level deletado com sucesso'};
+        try {
+            const level = await Level.find(id);
+            await level.delete();
+            return response.status(204).send();
+        } catch (error) {
+            return response.status(404).send({
+                message: 'Nenhum level encontrado.'
+            });
+        }
 
     }
 

@@ -33,9 +33,9 @@ class AdminController {
             };
             return responseData;
         } catch (error) {
-            return response.status(404).send({
+            return response.status(401).send({
                 error: {
-                    message: 'Invalid credentials'
+                    message: 'Falha de Autenticação'
                 }
             });
         }

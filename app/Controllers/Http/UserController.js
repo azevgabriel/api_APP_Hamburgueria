@@ -9,7 +9,7 @@ const UserCoupon = use('App/Models/UserCoupon');
 
 class UserController {
 
-    async register({ request }){
+    async register({ request, response }){
         const data = request.only([
             'name', 
             'cpf', 
@@ -20,7 +20,13 @@ class UserController {
             'burgers'
         ]);
     
-        var userData = await User.create(data)
+        try {
+            var userData = await User.create(data)
+        } catch (error) {
+            return response.status(400).send({
+                error: 'Erro ao criar usuário'
+            })
+        }
 
         const user = userData.toJSON();
     
@@ -48,10 +54,17 @@ class UserController {
         return user;
     };
 
-    async authenticate({ request, auth }){
+    async authenticate({ request, response, auth }){
         const { cpf, password } = request.all();
         
-        let token = await auth.attempt(cpf, password);
+        try {
+            var token = await auth.attempt(cpf, password);   
+        } catch (error) {
+            return response.status(401).send({
+                error: 'Falha de autenticação'
+            })
+        }
+
         let userData = await User.findBy('cpf', cpf)
 
         const user = userData.toJSON();
@@ -83,14 +96,17 @@ class UserController {
 
     };
 
-    async show ({ request }) {
+    async show ({ request, response }) {
 
         const {id} = request.params
     
         const userData = await User.findOrFail(id);
         
-        if(!userData)
-        throw 404
+        if(!userData){
+            return response.status(404).send({
+                error: 'Usuário não encontrado'
+            })
+        }
 
         const user = userData.toJSON();
         delete user.password;
@@ -100,14 +116,17 @@ class UserController {
 
     };
 
-    async update ({ request }) {
+    async update ({ request, response }) {
 
         const {id} = request.params;
 
         const userData = await User.findOrFail(id);
 
-        if(!userData)
-        throw 404
+        if(!userData){
+            return response.status(404).send({
+                error: 'Usuário não encontrado'
+            })
+        }
 
         const data = request.only([
             'name', 
@@ -116,26 +135,36 @@ class UserController {
             'image',
         ]);
 
-        userData.merge(data);
+        try {
+            userData.merge(data);
 
-        await userData.save();
+            await userData.save();
 
-        const user = userData.toJSON();
-        delete user.password;
-        delete user.created_at;
-        delete user.updated_at;
-        return user;
+            const user = userData.toJSON();
+            delete user.password;
+            delete user.created_at;
+            delete user.updated_at;
+            return user;
+        } catch (error) {
+            return response.status(400).send({
+                error: 'Erro ao atualizar usuário'
+            })
+        }
+        
 
     };
 
-    async updatePassword ({ request }) {
+    async updatePassword ({ request, response }) {
 
         const {id} = request.params;
 
         const user = await User.findOrFail(id);
 
-        if(!user)
-        throw 404
+        if(!user){
+            return response.status(404).send({
+                error: 'Usuário não encontrado'
+            })
+        }
 
         const data = request.only([
             'password',
@@ -150,25 +179,30 @@ class UserController {
 
             user.merge(mergeData);
             await user.save();
-            return {message: 'Senha alterada com sucesso'};
+            return response.status(200).send({
+                message: 'Senha atualizada com sucesso'
+            });
         } else {
-            return {message: 'Senha antiga incorreta'};
+            return response.status(400).send({
+                error: 'Falha em atualizar a senha.'
+            });
         }
         
     };
 
-    async destroy ({ request }) {
+    async destroy ({ request, response }) {
 
         const {id} = request.params;
-
         const user = await User.find(id);
 
-        if(!user)
-        throw 404
-
+        if(!user) {
+            return response.status(404).send({
+                error: 'Usuário não encontrado'
+            })
+        }
+        
         await user.delete();
-
-        return {message: 'Usuário deletado com sucesso'};
+        return response.status(202).send();
 
     }
 
