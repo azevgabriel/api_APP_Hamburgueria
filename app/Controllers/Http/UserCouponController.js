@@ -19,6 +19,20 @@ class UserCouponController {
   async store ({ request, response }) {
     const {user_id, coupon_id} = request.body;
 
+    const userCoupon = await UserCoupon
+      .query()
+      .where('user_id', '=', user_id)
+      .where('coupon_id', '=', coupon_id)
+      .fetch()
+
+    const userCouponJSON = userCoupon.toJSON()
+
+    if(userCouponJSON[0]){
+      return response.status(400).send({
+        message: 'Usuário já possui esse cupom',
+      });
+    }
+
     const coupon = await Coupon.findOrFail(coupon_id);
     const couponJSON = coupon.toJSON();
 
@@ -30,7 +44,7 @@ class UserCouponController {
         const userCoupon = await UserCoupon.create({
           coupon_id: coupon_id,
           user_id: user_id,
-          remaining_uses: 1,
+          remaining_uses: coupon.permitted_uses,
         });
 
         return userCoupon;
@@ -56,7 +70,7 @@ class UserCouponController {
       .where('remaining_uses', '>', 0)
       .fetch()
 
-    return userCoupon;  
+    return userCoupon;
 
   };
 
@@ -64,19 +78,19 @@ class UserCouponController {
 
     const {id, idCoupon} = request.params;
 
+    try {
+      var user = await User.findOrFail(id);
+    } catch (error) {
+      return response.status(400).send({
+        message: 'Usuário não encontrado',
+      });
+    }
+
     const userCoupon = await UserCoupon
       .query()
       .where('user_id', '=', id)
       .where('coupon_id', '=', idCoupon)
       .fetch()
-
-    const user = await User.findOrFail(id);
-    
-    if(!user){
-      return response.status(400).send({
-        message: 'Usuário não encontrado',
-      });
-    }
 
     // Subtrai 1 do uso restante
     let userCouponJSON = userCoupon.toJSON()
@@ -87,12 +101,12 @@ class UserCouponController {
         message: 'O usuário não possui mais usos do cupom',
       });
     }
-    
+
     // Adiciona número de burgers ao usuário
     let userJSON = user.toJSON()
     userJSON.burgers = userJSON.burgers + userCouponJSON[0].burgers_added;
 
-    let nextLevel = userJSON.level + 1; 
+    let nextLevel = userJSON.level + 1;
 
     let level = await Level.findBy('level', nextLevel);
 
@@ -119,7 +133,7 @@ class UserCouponController {
     return {userCouponId, userJSON};
 
   };
-  
+
 }
 
 module.exports = UserCouponController

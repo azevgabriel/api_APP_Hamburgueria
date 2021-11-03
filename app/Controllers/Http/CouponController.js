@@ -27,8 +27,8 @@ class CouponController {
 
     async store({ request, response }){
         const data = request.only([
-            'permitted_uses', 
-            'image', 
+            'permitted_uses',
+            'image',
             'description',
             'title',
             'fidelity',
@@ -47,8 +47,8 @@ class CouponController {
                 usersJSON.forEach(async user => {
                     if (couponJSON.fidelity !== true) {
                     const dataCoupon = {
-                            'user_id': user.id, 
-                            'coupon_id': couponJSON.id, 
+                            'user_id': user.id,
+                            'coupon_id': couponJSON.id,
                             'remaining_uses': couponJSON.permitted_uses,
                             'burgers_added': couponJSON.burgers_added
                         }
@@ -71,8 +71,8 @@ class CouponController {
         const {id} = request.params;
 
         const data = request.only([
-            'permitted_uses', 
-            'image', 
+            'permitted_uses',
+            'image',
             'title',
             'description',
             'fidelity',
@@ -82,13 +82,13 @@ class CouponController {
         ]);
 
         try {
-            var coupon = await Coupon.findOrFail(id);            
+            var coupon = await Coupon.findOrFail(id);
         } catch (error) {
             return response.status(404).send({
                 message: "Cupom não existente"
             })
         }
-        
+
         try {
             coupon.merge(data);
             await coupon.save();
@@ -120,7 +120,7 @@ class CouponController {
         const day = today.getDate();
         const month = today.getMonth() + 1;
         const year = today.getFullYear();
-        
+
         const coupons = await Coupon.all();
         const couponsJSON = coupons.toJSON();
 
