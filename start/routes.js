@@ -53,4 +53,6 @@ Route.group(()=> {
     Route.post('/userCoupon','UserCouponController.store');
     Route.delete('/userCoupon/:id','UserCouponController.destroy');
 
+    Route.post('/import','ImportController.store');
+
 }).middleware('auth:adminAuth');
