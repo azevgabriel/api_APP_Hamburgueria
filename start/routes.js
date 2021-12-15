@@ -40,6 +40,7 @@ Route.group(()=> {
     Route.get('/coupons/:id','CouponController.show');
     Route.post('/coupons','CouponController.store');
     Route.put('/coupons/:id','CouponController.update');
+    Route.patch('/coupons/:id/import','ImportController.store');
     Route.delete('/coupons/:id','CouponController.destroy');
 
     Route.get('/levels','LevelController.index');
@@ -53,6 +54,7 @@ Route.group(()=> {
     Route.post('/userCoupon','UserCouponController.store');
     Route.delete('/userCoupon/:id','UserCouponController.destroy');
 
-    Route.post('/import','ImportController.store');
-
 }).middleware('auth:adminAuth');
+
+
+
